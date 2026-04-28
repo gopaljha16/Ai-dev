@@ -17,7 +17,14 @@
 import { useEffect, useRef, useCallback } from "react";
 import useProjectStore from "../store/projectStore";
 
-const WS_BASE_URL = import.meta.env.VITE_WS_URL || "ws://localhost:3000";
+function normalizeWsUrl(url) {
+  return url
+    .replace(/^https:\/\//, "wss://")
+    .replace(/^http:\/\//, "ws://")
+    .replace(/\/+$/, "");
+}
+
+const WS_BASE_URL = normalizeWsUrl(import.meta.env.VITE_WS_URL || "ws://localhost:3000");
 const RECONNECT_DELAY = 3000;
 const MAX_RECONNECT_ATTEMPTS = 5;
 
