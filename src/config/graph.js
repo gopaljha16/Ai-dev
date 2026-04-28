@@ -215,11 +215,25 @@ export async function createCheckpointer() {
   const redisUrl = process.env.REDIS_URL;
 
   if (redisUrl) {
-    // Auto-start Redis container if not running
-    const { ensureRedis } = await import("../utils/redisDocker.js");
-    const redisReady = ensureRedis(redisUrl);
+    let redisReady = true;
 
-    if (redisReady) {
+    try {
+      const { RedisSaver } = await import("@langchain/langgraph-checkpoint-redis");
+      const saver = await RedisSaver.fromUrl(redisUrl);
+      console.log("Redis checkpointer connected");
+      return saver;
+    } catch (error) {
+      console.warn(`Redis connection failed: ${error.message}`);
+      redisReady = false;
+    }
+
+    const isLocalRedis = redisUrl.includes("localhost") || redisUrl.includes("127.0.0.1");
+    if (isLocalRedis) {
+      const { ensureRedis } = await import("../utils/redisDocker.js");
+      redisReady = ensureRedis(redisUrl);
+    }
+
+    if (redisReady && isLocalRedis) {
       try {
         const { RedisSaver } = await import("@langchain/langgraph-checkpoint-redis");
         const saver = await RedisSaver.fromUrl(redisUrl);
