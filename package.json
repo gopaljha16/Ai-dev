@@ -1,7 +1,7 @@
 {
-  "name": "ai-dev-team",
+  "name": "vireon-ai",
   "version": "2.0.0",
-  "description": "AI-Powered Multi-Agent Software Development Team",
+  "description": "Vireon AI - Autonomous Multi-Agent Development Platform",
   "type": "module",
   "main": "src/index.js",
   "scripts": {

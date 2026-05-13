@@ -77,11 +77,11 @@ export default function App() {
       <header className="header">
         <div className="header-left">
           <div className="logo">
-            <span className="logo-mark">//</span>
-            <span className="logo-text">DEVTEAM</span>
+            <span className="logo-mark">V</span>
+            <span className="logo-text">VIREON</span>
           </div>
           <span className="header-divider" />
-          <span className="header-label">mission control</span>
+          <span className="header-label">autonomous build console</span>
         </div>
         <div className="header-right">
           <div className="conn-indicator">
@@ -101,16 +101,29 @@ export default function App() {
           <div className="landing">
             <div className="landing-inner">
               <div className="landing-left">
-                <p className="landing-pre">MULTI-AGENT AI SYSTEM</p>
+                <p className="landing-pre">VIREON AI</p>
                 <h1 className="landing-title">
-                  Describe it.<br />
-                  We build it.
+                  Ship software from a single requirement.
                 </h1>
                 <p className="landing-desc">
-                  27 specialized agents — PM, Architect, Planner, Coder, 
-                  Reviewer, Executor, Debugger — working in concert. 
-                  From a single sentence to a deployed application.
+                  An autonomous multi-agent development platform where PM, Architect,
+                  Planner, Coder, Reviewer, Executor, and Debugger agents move an idea
+                  from product brief to sandboxed application.
                 </p>
+                <div className="landing-metrics" aria-label="Platform capabilities">
+                  <div className="metric">
+                    <span className="metric-value">27</span>
+                    <span className="metric-label">graph nodes</span>
+                  </div>
+                  <div className="metric">
+                    <span className="metric-value">5</span>
+                    <span className="metric-label">agent phases</span>
+                  </div>
+                  <div className="metric">
+                    <span className="metric-value">live</span>
+                    <span className="metric-label">ws telemetry</span>
+                  </div>
+                </div>
               </div>
               <div className="landing-right">
                 <div className="input-block">
@@ -130,7 +143,7 @@ export default function App() {
                       onClick={handleStart}
                       disabled={!requirementInput.trim() || isStarting}
                     >
-                      {isStarting ? "INITIALIZING..." : "LAUNCH"}
+                      {isStarting ? "INITIALIZING..." : "START BUILD"}
                     </button>
                     <span className="input-shortcut">Ctrl+Enter</span>
                   </div>

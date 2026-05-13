@@ -44,10 +44,10 @@ function printBanner() {
   console.log("");
   console.log("╔══════════════════════════════════════════════════════════╗");
   console.log("║                                                          ║");
-  console.log("║    🤖  AI DEV TEAM — Multi-Agent Development System     ║");
+  console.log("║    VIREON AI // Autonomous Development Platform          ║");
   console.log("║                                                          ║");
   console.log("║    Phase 4: Full Dev Loop — AI Writes Code!             ║");
-  console.log("║    By: Coder Army × Claude                               ║");
+  console.log("║    Multi-Agent Build Orchestration                       ║");
   console.log("║                                                          ║");
   console.log("╚══════════════════════════════════════════════════════════╝");
   console.log("");

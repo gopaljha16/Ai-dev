@@ -1,156 +1,204 @@
-<!-- How to start the project -->
+# Vireon AI
 
-npm i
+**Autonomous Multi-Agent Development Platform**
 
-cd dashboard && npm install && cd ..
+Vireon AI turns a natural language product idea into a planned, scaffolded, reviewed, tested, and sandboxed application.
 
-npm run dev
+It uses LangGraph to coordinate specialized AI agents, Google Gemini for reasoning and code generation, Docker for isolated project sandboxes, and a React dashboard for real-time mission control.
 
+## What It Does
 
+- Converts vague user requirements into structured product specifications.
+- Asks clarification questions when the requirement is incomplete.
+- Produces architecture blueprints, database models, API plans, frontend pages, and implementation tasks.
+- Creates isolated full-stack sandboxes with backend, frontend, and database services.
+- Runs an automated development loop with coding, review, execution, debugging, snapshots, and deployment verification.
+- Streams live pipeline progress to a React dashboard through WebSockets.
+- Tracks Gemini token usage and supports a configurable token budget.
+- Supports checkpointing with in-memory state by default and optional Redis persistence.
 
-# 🤖 AI Dev Team — Multi-Agent Software Development System
+## Agent Pipeline
 
-An autonomous multi-agent system that takes a software requirement, plans it, writes code, debugs it, tests it, and deploys — built with LangGraph + Gemini.
+The system is organized as a graph of specialized agents and workflow nodes:
 
-**Current: Phase 1 — PM Agent (Requirement → Specification)**
+1. **PM Agent** - turns a requirement into a clear product specification.
+2. **Architect Agent** - designs entities, database schema, API endpoints, frontend pages, and folder structure.
+3. **Blueprint Validator** - checks the architecture and routes failed sections back for repair.
+4. **Planner Agent** - breaks the blueprint into implementation phases and tasks.
+5. **Sandbox Setup** - creates a generated project workspace and prepares database, backend, and frontend services.
+6. **Coder Agent** - writes project files task by task.
+7. **Reviewer Agent** - reviews generated code before execution.
+8. **Executor Agent** - runs commands and checks whether the generated code works.
+9. **Debugger Agent** - analyzes failures and sends fixes back into the loop.
+10. **Snapshot Manager** - commits successful milestones and tags versions.
+11. **Deployment Verifier** - performs a final verification before presenting the result.
 
----
+## Tech Stack
 
-## Quick Start
-
-### 1. Prerequisites
-
-- Node.js 18+ installed
-- A Gemini API key ([get one free](https://aistudio.google.com/apikey))
-- (Optional) Redis for state persistence: `docker run -d -p 6379:6379 redis:latest`
-
-### 2. Setup
-
-```bash
-# Clone/copy the project
-cd ai-dev-team
-
-# Install dependencies
-npm install
-
-# Create your .env file
-cp .env.example .env
-
-# Edit .env and add your GEMINI_API_KEY
-```
-
-### 3. Run
-
-```bash
-# Option 1: Pass requirement directly
-node src/index.js "Build a todo app with categories and due dates"
-
-# Option 2: Interactive mode (it will prompt you)
-node src/index.js
-```
-
-### 4. What Happens
-
-1. PM Agent analyzes your requirement
-2. If ambiguous → asks you 3-8 clarifying questions
-3. You answer in the terminal
-4. PM Agent generates a structured project specification
-5. Token usage summary displayed
-
----
-
-## Testing
-
-```bash
-# Test 1: Graph skeleton (no API key needed - uses mocks)
-npm run test:graph
-
-# Test 2: PM Agent with real Gemini API (needs GEMINI_API_KEY)
-npm run test:pm
-```
-
-### Test 1: Graph Skeleton (`npm run test:graph`)
-
-Tests the LangGraph wiring WITHOUT calling Gemini:
-- ✅ State flows through nodes correctly
-- ✅ Conditional edges route properly (questions → human → back to PM)
-- ✅ Conversation history accumulates
-- ✅ Checkpointing saves state
-
-### Test 2: PM Agent (`npm run test:pm`)
-
-Tests the PM Agent with REAL Gemini API calls:
-- ✅ Vague requirement → generates clarifying questions
-- ✅ Answers provided → generates complete project spec
-- ✅ Spec has correct structure (appName, features, pages, DB recommendation)
-- ✅ Token usage tracked
-
----
+| Area | Technology |
+| --- | --- |
+| AI Orchestration | LangGraph |
+| LLM | Google Gemini |
+| Backend | Node.js, Express.js |
+| Frontend | React, Vite, Zustand |
+| Real-time Updates | WebSocket |
+| Sandbox Runtime | Docker |
+| Database Support | PostgreSQL, MongoDB |
+| Checkpointing | LangGraph MemorySaver, optional Redis |
+| Testing | Node.js test scripts |
 
 ## Project Structure
 
-```
-ai-dev-team/
-├── src/
-│   ├── index.js              # Main entry point (CLI)
-│   ├── agents/
-│   │   └── pmAgent.js        # PM Agent — requirement → spec
-│   ├── nodes/
-│   │   └── humanInput.js     # Terminal input for Q&A
-│   ├── config/
-│   │   ├── state.js          # Complete V2 state definition (30 nodes)
-│   │   └── graph.js          # LangGraph wiring + checkpointer
-│   └── utils/
-│       ├── gemini.js          # Gemini API wrapper + token tracking
-│       └── tokenTracker.js    # Token usage display
-├── tests/
-│   ├── test-graph-skeleton.js # Mock test — no API needed
-│   └── test-pm-agent.js       # Real API test
-├── .env.example               # Environment template
-└── package.json
-```
-
----
-
-## How It Works (First Principles)
-
-### The Graph
-
-LangGraph models the workflow as a **directed graph**:
-
-```
-START → [pmAgent] ←→ [humanInput]
-              ↓ (spec_ready)
-             END
+```text
+.
+|-- src/
+|   |-- agents/              # PM, architect, planner, coder, reviewer, debugger agents
+|   |-- config/              # LangGraph state and graph wiring
+|   |-- nodes/               # Workflow nodes for sandboxing, review, snapshots, routing
+|   |-- utils/               # Gemini wrapper, token tracking, Redis, Docker sandbox utilities
+|   `-- index.js             # CLI entry point
+|-- server/
+|   |-- routes/              # REST API for projects and sandbox files
+|   |-- services/            # Graph runner service
+|   |-- ws/                  # WebSocket event streaming
+|   `-- index.js             # Express server entry point
+|-- dashboard/
+|   `-- src/                 # React mission-control dashboard
+|-- tests/                   # Graph, agent, planner, sandbox, and dev-loop tests
+|-- .env.example
+|-- package.json
+`-- vercel.json
 ```
 
-### State
+## Prerequisites
 
-All nodes communicate through a **shared state object**. Node A writes to state → Node B reads from state. There are no direct function calls between nodes.
+- Node.js 18 or newer
+- A Gemini API key
+- Docker Desktop, recommended for sandbox execution
+- Redis, optional for persistent checkpointing
 
-### Checkpointing
+## Environment Variables
 
-After every node completes, the state is saved (to Redis or memory). If the process crashes, it resumes from the last checkpoint — not from scratch.
+Create a `.env` file from `.env.example`:
 
-### Token Tracking
+```bash
+cp .env.example .env
+```
 
-Every Gemini API call is wrapped with a token counter. You see exactly how many tokens each agent used and the estimated cost.
+Configure:
 
----
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-2.5-flash
+REDIS_URL=
+SERVER_PORT=3000
+FRONTEND_URL=http://localhost:5173
+TOKEN_BUDGET=2.0
+```
 
-## What's Next
+For the dashboard, create `dashboard/.env` from `dashboard/.env.example`:
 
-| Phase | What Gets Added |
-|-------|----------------|
-| Phase 2 | Architect Agent (5 steps) + Blueprint Validator |
-| Phase 3 | Planner Agent + Docker Sandbox + Health Check |
-| Phase 4 | Context Builder + Coder Agent + Registry + Snapshots |
-| Phase 5 | Reviewer + SimplifyTask + Executor + Debugger |
-| Phase 6 | Feedback Loop + Deploy Agent + Token Budget |
-| Phase 7 | React Frontend Dashboard |
+```env
+VITE_API_URL=http://localhost:3000/api
+VITE_WS_URL=ws://localhost:3000
+```
 
----
+## Installation
 
-## Built By
+Install backend dependencies:
 
-**Coder Army** × **Claude** — February 2026
+```bash
+npm install
+```
+
+Install dashboard dependencies:
+
+```bash
+cd dashboard
+npm install
+cd ..
+```
+
+## Running the App
+
+Start the backend server and React dashboard together:
+
+```bash
+npm run dev
+```
+
+Default URLs:
+
+- REST API: `http://localhost:3000/api`
+- WebSocket: `ws://localhost:3000/ws`
+- Dashboard: `http://localhost:5173`
+
+## CLI Usage
+
+Run a project from the terminal:
+
+```bash
+npm run cli -- "Build a todo app with categories, due dates, and authentication"
+```
+
+Or start interactive mode:
+
+```bash
+npm run cli
+```
+
+Resume a checkpointed project:
+
+```bash
+node src/index.js --resume project-1234567890
+```
+
+## Available Scripts
+
+```bash
+npm run dev              # Start Express server and React dashboard
+npm run server           # Start backend API and WebSocket server
+npm run dashboard        # Start dashboard only
+npm run build            # Build dashboard
+npm run cli              # Run CLI workflow
+npm run test:graph       # Test graph wiring with mocks
+npm run test:pm          # Test PM agent with Gemini
+npm run test:architect   # Test architect workflow
+npm run test:validator   # Test blueprint validation
+npm run test:planner     # Test planning workflow
+npm run test:sandbox     # Test sandbox setup
+npm run test:devloop     # Test full development loop
+npm run test:all:mock    # Run mock-safe tests
+```
+
+## Dashboard Features
+
+- Start a new project from a single requirement.
+- Watch live graph events and node transitions.
+- View logs, generated output, and token usage.
+- Answer agent clarification questions from the UI.
+- Cancel, retry, or resume project runs.
+- Inspect sandbox metadata and generated files through the API.
+
+## API Overview
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/health` | Server health check |
+| `POST` | `/api/projects` | Start a new project |
+| `GET` | `/api/projects` | List active runs |
+| `GET` | `/api/projects/:id` | Get summarized project state |
+| `POST` | `/api/projects/:id/resume` | Resume a checkpointed project |
+| `POST` | `/api/projects/:id/cancel` | Cancel a running project |
+| `GET` | `/api/projects/:id/sandbox` | Get sandbox information and files |
+| `GET` | `/api/projects/:id/files/:path` | Read a generated sandbox file |
+
+## Resume Summary
+
+**Vireon AI - Autonomous Multi-Agent Development Platform** is a full-stack AI system that automates requirement analysis, architecture planning, task generation, code creation, review, execution, debugging, and sandbox deployment using LangGraph, Gemini, Node.js, Docker, and React.
+
+## Notes
+
+- The app can run without Redis, but checkpoint persistence across restarts requires `REDIS_URL`.
+- Docker is recommended for full sandbox functionality. Without Docker, sandbox features may be limited.
+- Real Gemini-powered tests require a valid `GEMINI_API_KEY`.

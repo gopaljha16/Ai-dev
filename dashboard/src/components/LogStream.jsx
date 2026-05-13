@@ -6,6 +6,8 @@
 import { useEffect, useRef } from "react";
 import useProjectStore, { NODE_LABELS } from "../store/projectStore";
 
+const VISIBLE_EVENT_LIMIT = 180;
+
 const EVENT_LABELS = {
   run_started: "INIT",
   node_complete: "NODE",
@@ -67,6 +69,8 @@ function getEventDetail(event) {
 export default function LogStream() {
   const events = useProjectStore((s) => s.events);
   const scrollRef = useRef(null);
+  const visibleEvents =
+    events.length > VISIBLE_EVENT_LIMIT ? events.slice(-VISIBLE_EVENT_LIMIT) : events;
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -79,13 +83,16 @@ export default function LogStream() {
       <div className="panel-head">
         <span className="panel-tag">LOG</span>
         <span className="panel-title">Event Stream</span>
-        <span className="panel-meta">{events.length} events</span>
+        <span className="panel-meta">
+          {events.length} events
+          {events.length > visibleEvents.length ? ` / showing ${visibleEvents.length}` : ""}
+        </span>
       </div>
       <div className="log-scroll" ref={scrollRef}>
         {events.length === 0 ? (
           <div className="empty-state">Waiting for events...</div>
         ) : (
-          events.map((event, i) => {
+          visibleEvents.map((event, i) => {
             const label = EVENT_LABELS[event.type] || event.type.toUpperCase();
             const detail = getEventDetail(event);
             const isError = event.type === "error" || event.type === "run_cancelled";
@@ -94,7 +101,7 @@ export default function LogStream() {
 
             return (
               <div
-                key={i}
+                key={`${event.timestamp || "event"}-${event.type}-${i}`}
                 className={`log-row ${isError ? "log-row--error" : ""} ${isSuccess ? "log-row--ok" : ""} ${isInput ? "log-row--warn" : ""}`}
               >
                 <span className="log-ts">{formatTime(event.timestamp)}</span>

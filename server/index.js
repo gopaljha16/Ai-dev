@@ -79,8 +79,8 @@ async function start() {
   console.log("");
   console.log("╔══════════════════════════════════════════════════════════╗");
   console.log("║                                                          ║");
-  console.log("║   🤖  AI DEV TEAM — Mission Control Server              ║");
-  console.log("║   Phase 7: Web Dashboard                                 ║");
+  console.log("║   VIREON AI // Autonomous Build Console                  ║");
+  console.log("║   Multi-Agent Development Platform                       ║");
   console.log("║                                                          ║");
   console.log("╚══════════════════════════════════════════════════════════╝");
   console.log("");
